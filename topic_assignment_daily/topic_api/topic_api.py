@@ -1,11 +1,10 @@
 
-from google.cloud import storage, language_v1, bigquery, language_v2
+from google.cloud import language_v1, bigquery
 import pandas as pd
 
 
 def assign_topic(date=None):
     # Set up our GCS, NL, and BigQuery clients
-    storage_client = storage.Client()
     nl_client = language_v1.LanguageServiceClient()
 
 
@@ -51,7 +50,7 @@ def assign_topic(date=None):
             pass
 
     print(rows_for_bq)
-    print("Writing NL API article data to BigQuery...")
+    print("Writing post topics to bigquery...")
     # Write article text + category data to BQ
 
     output_table_ref = dataset.table('post_topics')
