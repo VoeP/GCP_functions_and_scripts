@@ -29,19 +29,11 @@ def classify_text(article):
                         type_='PLAIN_TEXT'
                 )
         )
-        document = {
-        "content": article,
-        "type_": language_v2.Document.Type.PLAIN_TEXT#,
-        #"language_code": "en",
-        }
 
-        response_sentiment = nl_client.analyze_sentiment(
-            request={"document": document, "encoding_type": language_v2.EncodingType.UTF8}
-        )
-        return [response_topic, response_sentiment]
+        return response_topic
 rows_for_bq = []  
 client = bigquery.Client()
-df = client.list_rows(table).to_dataframe().iloc[0:10]
+df = client.list_rows(table).to_dataframe()
 #df['text'] = df['text'].str.replace(',', ' ').str.replace('\n', ' ')
 print(df)
 # Send files to the NL API and save the result to send to BigQuery
@@ -50,16 +42,12 @@ for ind, data in df.iterrows():
     print(i/df.shape[0])
     i=i+1
     try:
-    #if 1==1:
-                comment_text = bytes(data['text'], 'utf-8')
-                nl_response = classify_text(comment_text)
-                nl_topic=nl_response[0]
-                nl_sentiment=nl_response[1]
+        comment_text = bytes(data['text'], 'utf-8')
+        nl_topic = classify_text(comment_text)
                 #if len(nl_topic.categories) > 0:
-                if 1==1:
-                        rows_for_bq.append((str(comment_text), 
-                                            str(nl_topic.categories.name), nl_topic.categories.confidence,
-                                           str(nl_sentiment.document_sentiment.score), nl_sentiment.document_sentiment.magnitude))
+        if 1==1:
+            rows_for_bq.append((str(comment_text), 
+                            str(nl_topic.categories.name), nl_topic.categories.confidence))
     except Exception as e:
         print(e)
 
