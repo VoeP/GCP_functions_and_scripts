@@ -35,10 +35,7 @@ def hello_http(request):
           project_id='ml-deployments-practice',
           if_exists="append")
 
-    if request_json and 'name' in request_json:
-        name = request_json['name']
-    elif request_args and 'name' in request_args:
-        name = request_args['name']
-    else:
-        name = 'World'
-    return 'Hello {}!'.format(name)
+    success_message = f'Moving data to GBQ successful on the {date.today()}'
+
+    
+    return success_message
