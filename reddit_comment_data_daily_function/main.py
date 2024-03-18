@@ -1,5 +1,6 @@
 import functions_framework
 from reddit_sentiment_modules.scraping_python_functions import *
+from reddit_sentiment_modules.pub_sub_messaging import *
 from datetime import date
 
 @functions_framework.http
@@ -37,5 +38,5 @@ def hello_http(request):
 
     success_message = f'Moving data to GBQ successful on the {date.today()}'
 
-    
+    publish_success_message(success_message)
     return success_message
