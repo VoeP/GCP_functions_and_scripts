@@ -1,13 +1,15 @@
 
+
 from google.cloud import bigquery
 import stanza
 import pandas as pd
+import text2emotion as te
 
 
-def assign_topic_and_sentiment(date=None):
+
+def assign_stats(date=None):
     stanza.download('en')  # Download the English language model
     nlp = stanza.Pipeline()
-    
     bq_client = bigquery.Client(project='ml-deployments-practice')
 
     dataset_ref = bq_client.dataset('reddit_comment_data')
@@ -25,7 +27,8 @@ def assign_topic_and_sentiment(date=None):
                 if entity.type != 'O':  # Exclude non-entity tokens
                     topics.append(entity.text)
         topics= ",".join(topics)
-        return [sentiment_score, topics]
+        emotions = te.get_emotion(text)
+        return [sentiment_score, topics, emotions]
 
 
     rows_for_bq = []  
@@ -33,7 +36,7 @@ def assign_topic_and_sentiment(date=None):
     df = client.list_rows(table).to_dataframe()
     #if date:
     #    df = df[df["date"] == date]
-    df = df[["post", "subreddit"]]
+    df = df[["text", "date"]]
     df.drop_duplicates(inplace=True)
     #print(df)
     # Send files to the NL API and save the result to send to BigQuery
@@ -42,29 +45,21 @@ def assign_topic_and_sentiment(date=None):
        # print(i/df.shape[0])
         i=i+1
         try:
-            comment_text = data['post']
+            comment_text = data['text']
             nl_result = classify_text(comment_text)
             if 1==1:
                 rows_for_bq.append((str(comment_text), 
-                            str(nl_result[0]), nl_result[1]))
+                            str(nl_result[0]), nl_result[1]), nl_result[1]["Happy"], nl_result[1]["Angry"],
+                            nl_result[1]["Sad"], nl_result[1]["Fear"])
         except Exception as e:
-            print(data['post'], e)
+            print(data['text'], e)
             pass
 
     print(rows_for_bq)
     print("Writing post topics to bigquery...")
     # Write article text + category data to BQ
 
-    # Empty post table
-    delete_query = f"""
-        DELETE FROM `ml-deployments-practice.reddit_comment_data.post_topics`
-        WHERE 1=1
-    """
-    query_job = bq_client.query(delete_query)
-    query_job.result()
-
-    # Recreate table
-    output_table_ref = dataset.table('post_topics')
+    output_table_ref = dataset.table('comment_analytics')
     output_table = bq_client.get_table(output_table_ref)
     errors = bq_client.insert_rows(output_table, rows_for_bq)
     assert errors == []

@@ -1,9 +1,8 @@
-functions-framework == 3.*
-pandas == 2.1.0
-google-cloud-bigquery == 3.12.0
-db-dtypes == 1.1.1
+functions-framework==3.*
+pandas==2.1.0
+google-cloud-bigquery==3.12.0
+db-dtypes==1.1.1
 google-cloud == 0.34.0
 pandas-gbq == 0.22.0
-google-cloud-language == 2.13.3
-text2emotion == 0.0.5
-emoji == 1.6.3
+stanza == 1.8.1
+emoji==1.6.3
