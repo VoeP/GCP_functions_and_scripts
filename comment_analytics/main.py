@@ -16,7 +16,7 @@ def hello_http(request):
     request_json = request.get_json(silent=True)
     request_args = request.args
 
-    assign_topic_and_sentiment()
+    assign_stats()
 
     success_message = f'Assigning topic to post titles on the {date.today()}'
 
