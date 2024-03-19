@@ -5,4 +5,5 @@ db-dtypes==1.1.1
 google-cloud == 0.34.0
 pandas-gbq == 0.22.0
 stanza == 1.8.1
+text2emotion == 0.0.5 
 emoji==1.6.3
