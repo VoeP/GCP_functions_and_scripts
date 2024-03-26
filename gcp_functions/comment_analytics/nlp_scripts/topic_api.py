@@ -2,10 +2,11 @@ from google.cloud import bigquery
 import stanza
 import pandas as pd
 import text2emotion as te
+from datetime import date
 
 
 
-def assign_stats(date=None):
+def assign_stats():
     stanza.download('en')  # Download the English language model
     nlp = stanza.Pipeline()
     bq_client = bigquery.Client(project='ml-deployments-practice')
@@ -29,12 +30,18 @@ def assign_stats(date=None):
         return [sentiment_score, topics, emotions]
 
 
-    rows_for_bq = []  
+    rows_for_bq = []
     client = bigquery.Client()
     df = client.list_rows(table).to_dataframe()
     #if date:
     #    df = df[df["date"] == date]
     df = df[["text", "date"]]
+    print(df.shape)
+    df["date"] = df["date"].astype(str)
+    today = str(date.today())
+    df = df[df["date"]==today]
+    print(df.shape)
+    print(today)
     df.drop_duplicates(inplace=True)
     #print(df)
     # Send files to the NL API and save the result to send to BigQuery
@@ -46,18 +53,18 @@ def assign_stats(date=None):
             comment_text = data['text']
             nl_result = classify_text(comment_text)
             if 1==1:
-                rows_for_bq.append((str(comment_text), 
-                            str(nl_result[0]), str(nl_result[0]), nl_result[2]["Happy"], nl_result[2]["Angry"],
+                rows_for_bq.append((str(comment_text),
+                            str(nl_result[0]), str(nl_result[1]), nl_result[2]["Happy"], nl_result[2]["Angry"],
                             nl_result[2]["Sad"], nl_result[2]["Fear"]))
         except Exception as e:
-            print(data['text'], e)
+            #print(data['text'], e)
             pass
 
-    print(rows_for_bq)
+    #print(rows_for_bq)
     print("Writing post topics to bigquery...")
     # Write article text + category data to BQ
 
-    output_table_ref = dataset.table('comment_analytics')
+    output_table_ref = dataset.table('comment_sentiments')
     output_table = bq_client.get_table(output_table_ref)
     errors = bq_client.insert_rows(output_table, rows_for_bq)
     assert errors == []
