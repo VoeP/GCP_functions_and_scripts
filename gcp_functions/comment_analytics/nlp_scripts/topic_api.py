@@ -1,5 +1,3 @@
-
-
 from google.cloud import bigquery
 import stanza
 import pandas as pd
@@ -48,9 +46,9 @@ def assign_stats(date=None):
             comment_text = data['text']
             nl_result = classify_text(comment_text)
             if 1==1:
-                rows_for_bq.append(str(comment_text), 
+                rows_for_bq.append((str(comment_text), 
                             str(nl_result[0]), str(nl_result[0]), nl_result[2]["Happy"], nl_result[2]["Angry"],
-                            nl_result[2]["Sad"], nl_result[2]["Fear"])
+                            nl_result[2]["Sad"], nl_result[2]["Fear"]))
         except Exception as e:
             print(data['text'], e)
             pass
