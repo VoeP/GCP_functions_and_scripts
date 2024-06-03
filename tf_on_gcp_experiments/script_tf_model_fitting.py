@@ -93,11 +93,12 @@ model.compile(optimizer='adam',
               loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
               metrics=['accuracy'])
 
-history = model.fit(train_ds, validation_data=val_ds, epochs = 6)
+history = model.fit(train_ds, validation_data=val_ds, epochs = 10)
 
 
-
-test_loss, test_acc = model.evaluate(X_test, y_test)
+test_ds = tf.data.Dataset.from_tensor_slices((X_test, y_test))
+test_ds = test_ds.batch(batch_size)
+test_loss, test_acc = model.evaluate(test_ds)
 print('\nTest accuracy: {}'.format(test_acc))
 
 
@@ -108,7 +109,9 @@ plt.title('model accuracy')
 plt.ylabel('accuracy')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
-plt.show()
+plt.savefig('acc_and_val_accuracy.png')
+plt.close()
+
 # summarize history for loss
 plt.plot(history.history['loss'])
 plt.plot(history.history['val_loss'])
@@ -116,4 +119,7 @@ plt.title('model loss')
 plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
-plt.show()
+plt.savefig('loss.png')
+plt.close()
+
+model.save('model_draft.keras')
