@@ -39,7 +39,9 @@ def assign_stats():
     print(df.shape)
     df["date"] = df["date"].astype(str)
     today = str(date.today())
+    #today = "2024-03-28"
     df = df[df["date"]==today]
+    df = df[df["level"] == "top"]
     print(df.shape)
     print(today)
     df.drop_duplicates(inplace=True)

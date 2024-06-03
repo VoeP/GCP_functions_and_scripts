@@ -5,8 +5,17 @@ Created on Thu Mar 14 09:21:16 2024
 @author: volte
 """
 
-from google.cloud import storage, language_v1, bigquery, language_v2
+from google.cloud import bigquery
 import pandas as pd
+import tensorflow as tf
+from tensorflow.keras.layers import TextVectorization
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+import keras
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.text import Tokenizer
+import re
+
 
 # Set up our GCS, NL, and BigQuery clients
 storage_client = storage.Client()
