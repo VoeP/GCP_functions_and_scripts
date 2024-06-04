@@ -93,7 +93,7 @@ model.compile(optimizer='adam',
               loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
               metrics=['accuracy'])
 
-history = model.fit(train_ds, validation_data=val_ds, epochs = 10)
+history = model.fit(train_ds, validation_data=val_ds, epochs = 20)
 
 
 test_ds = tf.data.Dataset.from_tensor_slices((X_test, y_test))
@@ -122,4 +122,6 @@ plt.legend(['train', 'test'], loc='upper left')
 plt.savefig('loss.png')
 plt.close()
 
-model.save('model_draft.keras')
+model.save('model_v2.keras')
+model.export('tf_model_v2')
+
